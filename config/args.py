@@ -17,7 +17,7 @@ def get_args_parser():
     parser.add_argument('--model', default='mae_vit_base_patch16', type=str, metavar='MODEL',
                         help='Name of model to train')
     parser.add_argument('--model_path', type=str, default=None, 
-                        help='Path to pretrained model for continued training or model to use for evaluation')
+                        help='Path to pretrained model for continued training or model to use for validation / testing')
     parser.add_argument('--img_size', default=224, type=int,
                         help='Input image size')
     parser.add_argument('--patch_size', default=16, type=int,
@@ -75,11 +75,11 @@ def get_args_parser():
     parser.add_argument('--seed', default=0, type=int,
                         help='Seed set for reproducability')
 
-    # run evaluation parameters 
-    parser.add_argument('--evaluate', action='store_true',
-                        help='Set model for evaluation')
-    parser.add_argument('--evaluation_set', default=None, type=str, 
-                        help="Dataset split to use for evaluation: validation_negative, testing_negative, validation_positive, testing_positive")
+    # Run evaluation parameters 
+    parser.add_argument('--validate', action='store_true',
+                        help='Set model for validation')
+    parser.add_argument('--validation_set', default=None, type=str, 
+                        help="Dataset split to use for validation: validation_negative, testing_negative, validation_positive, testing_positive")
     parser.add_argument('--inference', action='store_true', 
                         help='Set model for inference using a pre-trained model on provided data')
     parser.add_argument('--err', type=lambda s: [err.strip() for err in s.split(',')], default=None, 
@@ -93,8 +93,8 @@ def assert_arguments(argument, name):
 
 def validate_arguments(args): 
     assert_arguments(args.data_path, "data_path")
-    if args.evaluate: 
-        assert_arguments(args.evaluation_set, "evaluation_set")
+    if args.validate: 
+        assert_arguments(args.validation_set, "validation_set")
     if args.inference: 
         assert_arguments(args.model_path, "model_path")
 

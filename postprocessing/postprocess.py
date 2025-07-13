@@ -17,9 +17,9 @@ from PIL import Image
 from skimage.metrics import structural_similarity as ssim
 
 import models_mae
-import run_evaluation.generate_masks as generate_masks
-import run_evaluation.calculate_metrics as calculate_metrics
-import run_evaluation.calculate_threshold as calculate_threshold
+import postprocessing.generate_masks as generate_masks
+import postprocessing.calculate_metrics as calculate_metrics
+import postprocessing.calculate_threshold as calculate_threshold
 
 def get_threshold():
     try:
@@ -46,7 +46,7 @@ def save_outputs(img, filename, folder):
     img_file = os.path.join(folder, filename)
     Image.fromarray(img).save(img_file)
 
-class MAEEvaluator: 
+class MAEPostProcessor: 
     def __init__(self, logger, error, mask_ratio, num_trials, output_dir): 
         self.logger = logger
         self.error = error
@@ -78,7 +78,7 @@ class MAEEvaluator:
                 anomaly_score_normal.append(np.mean(difference))
         return anomaly_score_normal, anomaly_score_abnormal 
 
-    def evaluate_difference(self, model, images, filenames, ground_truth_labels, mode="complete", img_folder=None, mask_folder=None, use_validation=True):
+    def get_difference(self, model, images, filenames, ground_truth_labels, mode="complete", img_folder=None, mask_folder=None, use_validation=True):
         ground_truth_labels = ground_truth_labels.numpy()
         imgs_ = [torch.einsum('chw->hwc', img).numpy() for img in images]
         imgs_ = np.array(imgs_, np.float32)
@@ -137,7 +137,7 @@ class MAEEvaluator:
   
         return results
 
-    def evaluate_dataloader(self, model, dataloader, img_folder, mask_folder): 
+    def postprocessing_dataloader(self, model, dataloader, img_folder, mask_folder): 
         result_keys = ["anomaly_score_normal", "anomaly_score_abnormal", 
                        "mask_score_normal", "mask_score_abnormal", 
                        "ssim_score_normal", "ssim_score_abnormal", 
@@ -145,8 +145,8 @@ class MAEEvaluator:
         metrics = {key: [] for key in result_keys}
         metrics['labels'] = []
         for data_iter_step, (samples, labels, filenames) in enumerate(dataloader): 
-            print(f"Evaluating batch {data_iter_step} with {len(samples)} images")
-            batch_results = self.evaluate_difference(model, samples, filenames, labels, img_folder=img_folder, mask_folder=mask_folder)
+            print(f"Validating batch {data_iter_step} with {len(samples)} images")
+            batch_results = self.get_difference(model, samples, filenames, labels, img_folder=img_folder, mask_folder=mask_folder)
             for key in result_keys: 
                 if key in batch_results: 
                     metrics[key].extend(batch_results[key])
@@ -154,7 +154,7 @@ class MAEEvaluator:
         return metrics
 
 
-    def run_evaluation(self, model, dataloader): 
+    def run_postprocessing(self, model, dataloader): 
         img_folder= os.path.join(self.output_dir, 'images/')
         mask_folder = os.path.join(self.output_dir, 'masks/')
         os.makedirs(img_folder, exist_ok=True)
@@ -163,13 +163,13 @@ class MAEEvaluator:
         if isinstance(model, str): 
             model = prepare_model(model)
 
-        results = self.evaluate_dataloader(model, dataloader=dataloader, img_folder=img_folder, mask_folder=mask_folder)
+        results = self.postprocessing_dataloader(model, dataloader=dataloader, img_folder=img_folder, mask_folder=mask_folder)
         THRESHOLD = get_threshold()
         predictions = results['mask_score_total']
         label_predictions = (np.array(predictions) > THRESHOLD).astype(np.uint8)
         calculate_metrics.calculate_metrics(self.logger, predictions, label_predictions, results) 
 
-        print("Model evaluation complete")
+        print("Model validation complete")
 
     def generate_threshold(self, model, dataloader): 
         if isinstance(model, str): 
@@ -178,6 +178,6 @@ class MAEEvaluator:
         mask_scores = []
         for data_iter_step, (samples, labels, filenames) in enumerate(dataloader): 
             print(f"Generating masks for threshold calculation. Batch {data_iter_step}")
-            batch_mask_scores = self.evaluate_difference(model, images=samples, filenames=filenames, ground_truth_labels=labels, mode="threshold")
+            batch_mask_scores = self.get_difference(model, images=samples, filenames=filenames, ground_truth_labels=labels, mode="threshold")
             mask_scores.extend(batch_mask_scores)
         calculate_threshold.calculate_threshold(self.logger, mask_scores)

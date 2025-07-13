@@ -30,7 +30,7 @@ import util.misc as misc
 from util.misc import save_info
 
 from run_training.train import train
-import run_evaluation.evaluate as evaluate
+import postprocessing.postprocess as postprocess
 
 def main(args):
     validate_arguments(args)
@@ -72,13 +72,13 @@ def main(args):
             transforms.ToTensor()
         ])
 
-    evaluator = evaluate.MAEEvaluator(logger=logger, 
+    postProcessor = postprocess.MAEPostProcessor(logger=logger, 
                                       error=args.err, 
                                       mask_ratio=args.mask_ratio, 
                                       num_trials=args.num_trials, 
                                       output_dir=args.output_dir)
 
-    if args.train or args.evaluate: 
+    if args.train or args.validate: 
         training_data, validation_negative, testing_negative, validation_positive, testing_positive  = create_dataframe.prepare_execution_data(metadata_df, logger, training_size, split_directory)
 
     if args.train: 
@@ -98,10 +98,10 @@ def main(args):
         save_info("Training complete, validating for threshold calculation", logger=logger)
         val_dataset = processInput(testing_negative, images_folder, logger, transform)
         val_dataloader = torch.utils.data.DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False)
-        evaluator.generate_threshold(model, val_dataloader)
+        postProcessor.generate_threshold(model, val_dataloader)
 
-    if args.evaluate: 
-        evaluate.get_threshold()
+    if args.validate: 
+        postprocess.get_threshold()
         splits = {
             "validation_negative": validation_negative,
             "testing_negative": testing_negative, 
@@ -109,22 +109,22 @@ def main(args):
             "testing_positive": testing_positive
         }
         logger.info(64*"-")
-        save_info("Evaluation argument set - beginning evaluation", logger=logger)
+        save_info("Validation argument set - beginning validation", logger=logger)
 
-        selected_split = splits[args.evaluation_set]
+        selected_split = splits[args.validation_set]
         val_dataset = processInput(selected_split, images_folder, logger, transform)
         val_dataloader = torch.utils.data.DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False)
         logger.info(64*"-")
         
         if model:  
-            logger.info("Evaluating with trained model")
-            evaluator.run_evaluation(model, val_dataloader)
+            logger.info("Validating with trained model")
+            postProcessor.run_postprocessing(model, val_dataloader)
         else: 
-            logger.info(f"Evaluating with model checkpoint provided in arguments: {args.model_path}")
-            evaluator.run_evaluation(args.model_path, val_dataloader)
+            logger.info(f"Validating with model checkpoint provided in arguments: {args.model_path}")
+            postProcessor.run_postprocessing(args.model_path, val_dataloader)
 
     if args.inference: 
-        evaluate.get_threshold()
+        postprocess.get_threshold()
         logger.info(64*"-")
         save_info("Inference argument set - beginning inference", logger=logger)
         logger.info(64*"-")
@@ -133,10 +133,10 @@ def main(args):
         inference_dataloader = torch.utils.data.DataLoader(inference_dataset, batch_size=args.batch_size, shuffle=False)
         logger.info(64*"-")
         save_info(f"Using provided model for inference: {args.model_path}", logger)
-        evaluator.run_evaluation(args.model_path, inference_dataloader)
+        postProcessor.run_postprocessing(args.model_path, inference_dataloader)
 
-    if not args.train and not args.evaluate and not args.inference: 
-        print("Please set argument for execution: --train=True for training, --evaluate=True for evaluation or --inference=True for inference")
+    if not args.train and not args.validate and not args.inference: 
+        print("Please set argument for execution: --train=True for training, --validate=True for validation or --inference=True for inference")
     
     
     if listener: 

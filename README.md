@@ -25,7 +25,7 @@ As the framework requires several Python packages with specific versions and dep
 - See [here](https://www.python.org/downloads/) for assistance installing Python
 - See [here](https://www.anaconda.com/download) for assistance installing Anaconda
 
-Use the following commands to set up the Conda environment. All the Python packages, their dependencies and versions required to execute this framework are installed with the Conda environment through the [_environment.yml_](https://github.com/jr-chapman/foreign-object-anomaly-detection/blob/main/environment.yml) file. 
+Open the cloned repository in an IDE of your choice and use the following commands to set up the Conda environment. All the Python packages, their dependencies and versions required to execute this framework are installed with the Conda environment through the [_environment.yml_](https://github.com/jr-chapman/foreign-object-anomaly-detection/blob/main/environment.yml) file. 
 ```
 conda env create -f environment.yml
 conda activate foreign-object-anomaly-detection
@@ -53,18 +53,18 @@ The following section provides some example calls for model training, testing an
 To train the model, run the following command from the command line. Replace _<dataset_path>_ with the path to the directory where the PadChest dataset images are saved. As the original images are rather large, please beware that they may need resizing before use depending on your available computational resources. 
 
 ```
-python main.py --train --data_path=<dataset_path> --lr=0.001 --model_path=./brats_pretrained.pth 
+python main.py --train --data_path=<dataset_path> --model_path=./brats_pretrained.pth 
 ```
 
-#### Model Evaluation or Testing
-For execution of evaluation or testing, use the command below. Provide the path to the pre-trained model you wish to use for evaluation or testing in _<trained_model_checkpoint>_ and the dataset subset in _<validation_subset>_. The dataset subsets are: _validation_negative, testing_negative, validation_positive, testing_positive_
+#### Model Validation and Testing
+For execution of validation and testing, use the command below. Provide the path to the pre-trained model you wish to use for validation and testing in _<trained_model_checkpoint>_ and the dataset subset in _<validation_subset>_. The dataset subsets are: _validation_negative, testing_negative, validation_positive, testing_positive_
 ```
-python main.py --evaluate --model_path=<trained_model_checkpoint> --data_path=<dataset_path> --evaluation_set=<validation_subset> --err=ssim,anomaly
+python main.py --validate --model_path=<trained_model_checkpoint> --data_path=<dataset_path> --validation_set=<validation_subset> --err=ssim,anomaly
 ```
 
-Training and evaluation or testing can also be called together using the following arguments. In this case, the previously trained model will directly be used for evaluation. 
+Training and validation or testing can also be called together using the following arguments. In this case, the previously trained model will directly be used for validation. 
 ```
-python main.py --train --data_path=<dataset_path> --lr=0.001 --model_path=./brats_pretrained.pth --evaluate --evaluation_set=<subset> --err=ssim,anomaly
+python main.py --train --data_path=<dataset_path> --lr=0.001 --model_path=./brats_pretrained.pth --validate --validation_set=<validation_subset> --err=ssim,anomaly
 ```
 
 #### Model Inference 
