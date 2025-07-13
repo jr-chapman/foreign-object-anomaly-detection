@@ -9,7 +9,7 @@ This thesis addresses the challenge of medical image anonymisation by focusing o
 A system to detect and locate pixels containing foreign objects is implemented, including comprehensive data preprocessing, model training, output post-processing and extensive evaluation. Using precise pixel-wise localisation, this model facilitates subsequent removal of sensitive areas contributing to anonymisation while preserving medical integrity of the image. The resulting model achieves an AUC-ROC of 0.788 and furthers medical image anonymisation in an age of increasing digital data usage and sharing.
 
 ## Installation Guidelines 
-This section provides instructions for the installation and setup of the designed framework for the detection of pixels containing foreign objects in medical images. As this implementation is based on a pre-trained model, please also consider [Lily Georgescu's](https://github.com/lilygeorgescu/MAE-medical-anomaly-detection.git) repository with the original masked autoencoder for anomaly detection. The steps listed below can be followed to ensure correct installation and successful execution of the framework. 
+This section provides instructions for the installation and setup of the designed framework for the detection of pixels containing foreign objects in medical images. As this implementation is based on a pre-trained model, please also consider [Lily Georgescu's](https://github.com/lilygeorgescu/MAE-medical-anomaly-detection.git) repository with the original masked autoencoder for anomaly detection. Follow the steps below to ensure correct installation and successful execution of the framework.
 
 ### Step 1: Clone the GitHub Repository 
 
@@ -27,7 +27,7 @@ As the framework requires several Python packages with specific versions and dep
 
 Use the following commands to set up a Conda environment. Replace _<my_environment>_ with your desired environment name. 
 ```
-conda create –name <my_environment>
+conda create –-name <my_environment>
 conda activate <my_environment>
 ```
 
@@ -39,7 +39,7 @@ pip install -r requirements.txt
 
 ### Step 4: Download the PadChest Dataset 
 The PadChest dataset published by Bustos et al. can be downloaded from this link: [https://bimcv.cipf.es/bimcv-projects/padchest/](https://bimcv.cipf.es/bimcv-projects/padchest/).
-To download the dataset, click the button _Download Complete Dataset_. You will first have to fill in a request form and agree to the terms of use. Then you will be provided with the link to the full dataset download. Download folders 1-50 and 54 to your local machine without changing the original folder structure or names. Unzip the folders and load them into a local directory. The directory name will be needed for execution. 
+To download the dataset, click the button _Download Complete Dataset_. You will first have to fill in a request form and agree to the terms of use. Then you will receive with the link to download the full dataset. Download folders 1-50 and 54 to your local machine without changing the original folder structure or names. Unzip the folders and load them into a local directory. The directory name will be needed for execution. 
 
 - If you wish to verify download was successful, the file _Verify_Zips_ImageCounts.csv.xlsx_ provides an overview of the separate files and number of contained images to check you have the whole dataset.
 
@@ -47,7 +47,7 @@ Finally, download the file _PADCHEST_chest_x_ray_images_labels_160K_01.02.19.csv
 
 ### Step 5: Execute the Model 
 
-The following section provides you with some example calls for model execution for training, testing and inference. GPU acceleration is recommended for execution. The framework is executed using command line arguments and the minimum arguments required for successful execution are shown here. If you wish to tune other model parameters, please the _args.py_ file in the _config_ directory of the repository for all available arguments. 
+The following section provides some example calls for model training, testing and inference. GPU acceleration is recommended for execution. The framework is executed using command line arguments and the minimum arguments required for successful execution are shown here. If you wish to tune other model parameters, please the _args.py_ file in the _config_ directory of the repository for all available arguments. 
 
 - If you do not wish to train your own model, a pre-trained model for this task is available in (checkpoint.pth)[checkpoint.pth]. 
 - The pre-trained weights from [Georgescu](https://github.com/lilygeorgescu/MAE-medical-anomaly-detection.git) used for continued training are in the file (brats_pretrained.pth)[checkpoint.pth], no further action is required to use them. 
@@ -60,7 +60,7 @@ python main.py --train --data_path=_<dataset_path>_ --lr=0.001 --model_path=../b
 ```
 
 #### Model Evaluation or Testing
-For execution of evaluation or testing, use the following command. Provide the path to the pre-trained model you wish to use for evaluation or testing in _<checkpoint>_ and the dataset subset in _<subset>_. The dataset subsets are: _validation_negative, testing_negative, validation_positive, testing_positive_
+For execution of evaluation or testing, use the command below. Provide the path to the pre-trained model you wish to use for evaluation or testing in _<checkpoint>_ and the dataset subset in _<subset>_. The dataset subsets are: _validation_negative, testing_negative, validation_positive, testing_positive_
 ```
 python3 main.py --evaluate --model_path=<checkpoint> --data_path=<dataset_path> --evaluation_set=<subset> --err=ssim,anomaly
 ```
