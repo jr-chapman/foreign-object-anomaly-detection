@@ -53,13 +53,13 @@ The following section provides some example calls for model training, testing an
 To train the model, run the following command from the command line. Replace _<dataset_path>_ with the path to the directory where the PadChest dataset images are saved. As the original images are rather large, please beware that they may need resizing before use depending on your available computational resources. 
 
 ```
-python main.py --train --data_path=_<dataset_path>_ --lr=0.001 --model_path=./brats_pretrained.pth 
+python main.py --train --data_path=<dataset_path> --lr=0.001 --model_path=./brats_pretrained.pth 
 ```
 
 #### Model Evaluation or Testing
-For execution of evaluation or testing, use the command below. Provide the path to the pre-trained model you wish to use for evaluation or testing in _<checkpoint>_ and the dataset subset in _<subset>_. The dataset subsets are: _validation_negative, testing_negative, validation_positive, testing_positive_
+For execution of evaluation or testing, use the command below. Provide the path to the pre-trained model you wish to use for evaluation or testing in _<trained_model_checkpoint>_ and the dataset subset in _<validation_subset>_. The dataset subsets are: _validation_negative, testing_negative, validation_positive, testing_positive_
 ```
-python main.py --evaluate --model_path=<checkpoint> --data_path=<dataset_path> --evaluation_set=<subset> --err=ssim,anomaly
+python main.py --evaluate --model_path=<trained_model_checkpoint> --data_path=<dataset_path> --evaluation_set=<validation_subset> --err=ssim,anomaly
 ```
 
 Training and evaluation or testing can also be called together using the following arguments. In this case, the previously trained model will directly be used for evaluation. 
