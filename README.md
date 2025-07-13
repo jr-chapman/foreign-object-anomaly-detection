@@ -25,49 +25,46 @@ As the framework requires several Python packages with specific versions and dep
 - See [here](https://www.python.org/downloads/) for assistance installing Python
 - See [here](https://www.anaconda.com/download) for assistance installing Anaconda
 
-Use the following commands to set up a Conda environment. Replace _<my_environment>_ with your desired environment name. 
+Use the following commands to set up the Conda environment. All the Python packages, their dependencies and versions required to execute this framework are installed with the Conda environment through the _environment.yml_ file. 
 ```
-conda create –-name <my_environment>
-conda activate <my_environment>
+conda create –-name -f environment.yml
+conda activate foreign-object-anomaly-detection
 ```
+If you wish to rename the Conda environment, change the name specified in the _environment.yml_ file. 
 
-### Step 3: Install the Required Packages 
-All the Python packages, their dependencies and versions are listed in the _requirements.txt_ file. To install them, run the following command: 
-```
-pip install -r requirements.txt 
-```
-
-### Step 4: Download the PadChest Dataset 
+### Step 3: Download the PadChest Dataset 
 The PadChest dataset published by Bustos et al. can be downloaded from this link: [https://bimcv.cipf.es/bimcv-projects/padchest/](https://bimcv.cipf.es/bimcv-projects/padchest/).
 To download the dataset, click the button _Download Complete Dataset_. You will first have to fill in a request form and agree to the terms of use. Then you will receive with the link to download the full dataset. Download folders 1-50 and 54 to your local machine without changing the original folder structure or names. Unzip the folders and load them into a local directory. The directory name will be needed for execution. 
 
 - If you wish to verify download was successful, the file _Verify_Zips_ImageCounts.csv.xlsx_ provides an overview of the separate files and number of contained images to check you have the whole dataset.
 
-Finally, download the file _PADCHEST_chest_x_ray_images_labels_160K_01.02.19.csv_ which contains all dataset metadata. This folder should be saved to the _dataset_ directory in the cloned repository, so it is accessible during execution.
+Finally, download the file _PADCHEST_chest_x_ray_images_labels_160K_01.02.19.csv_ which contains all dataset metadata. This CSV file should be saved to the _dataset_ directory in the cloned repository, so it is accessible during execution.
+
+### Step 4: Download the Pre-Trained MOdel
+This implementation is based on the pre-trained MAE anomaly detection model by Lily Georgescu. To download the pre-trained model, navigate to the repository at this link: [https://github.com/lilygeorgescu/MAE-medical-anomaly-detection](https://github.com/lilygeorgescu/MAE-medical-anomaly-detection) and scroll to the section _Results and trained models_. Here, install the pre-trained model for the BraTS2020 dataset over the Google Drive link. A direct link to the Google Drive is provided [here](https://drive.google.com/file/d/1QxFHy8nYeaj5OPQExmcbf9PQNzMOhoCy/view).
+
+Once downloaded, copy and save the _brats\_pretrained.pth_ file to the root directory of the repository. 
 
 ### Step 5: Execute the Model 
 
-The following section provides some example calls for model training, testing and inference. GPU acceleration is recommended for execution. The framework is executed using command line arguments and the minimum arguments required for successful execution are shown here. If you wish to tune other model parameters, please the _args.py_ file in the _config_ directory of the repository for all available arguments. 
-
-- If you do not wish to train your own model, a pre-trained model for this task is available in (checkpoint.pth)[checkpoint.pth]. 
-- The pre-trained weights from [Georgescu](https://github.com/lilygeorgescu/MAE-medical-anomaly-detection.git) used for continued training are in the file (brats_pretrained.pth)[checkpoint.pth], no further action is required to use them. 
+The following section provides some example calls for model training, testing and inference. GPU acceleration is recommended for execution. The framework is executed using command line arguments and the minimum arguments required for successful execution are shown here. If you wish to tune other model parameters, please the (args.py)[https://github.com/jr-chapman/foreign-object-anomaly-detection/blob/main/config/args.py] file in the _config_ directory of the repository for all available arguments. 
 
 #### Model Training 
 To train the model, call the following command from the command line. Replace _<dataset_path>_ with the path to the directory where you saved the PadChest dataset images. As the original images are rather large, please beware that they may need resizing before use depending on your available computational resources. 
 
 ```
-python main.py --train --data_path=_<dataset_path>_ --lr=0.001 --model_path=../brats_pretrained.pth 
+python main.py --train --data_path=_<dataset_path>_ --lr=0.001 --model_path=./brats_pretrained.pth 
 ```
 
 #### Model Evaluation or Testing
 For execution of evaluation or testing, use the command below. Provide the path to the pre-trained model you wish to use for evaluation or testing in _<checkpoint>_ and the dataset subset in _<subset>_. The dataset subsets are: _validation_negative, testing_negative, validation_positive, testing_positive_
 ```
-python3 main.py --evaluate --model_path=<checkpoint> --data_path=<dataset_path> --evaluation_set=<subset> --err=ssim,anomaly
+python main.py --evaluate --model_path=<checkpoint> --data_path=<dataset_path> --evaluation_set=<subset> --err=ssim,anomaly
 ```
 
 Training and evaluation or testing can also be called together using the following arguments. In this case, the previously trained model will directly be used for evaluation. 
 ```
-python main.py --train --data_path=<dataset_path> --lr=0.001 --model_path=../brats_pretrained.pth --evaluate --evaluation_set=<subset> --err=ssim,anomaly
+python main.py --train --data_path=<dataset_path> --lr=0.001 --model_path=./brats_pretrained.pth --evaluate --evaluation_set=<subset> --err=ssim,anomaly
 ```
 
 #### Model Inference 
