@@ -25,12 +25,12 @@ As the framework requires several Python packages with specific versions and dep
 - See [here](https://www.python.org/downloads/) for assistance installing Python
 - See [here](https://www.anaconda.com/download) for assistance installing Anaconda
 
-Use the following commands to set up the Conda environment. All the Python packages, their dependencies and versions required to execute this framework are installed with the Conda environment through the _environment.yml_ file. 
+Use the following commands to set up the Conda environment. All the Python packages, their dependencies and versions required to execute this framework are installed with the Conda environment through the [_environment.yml_](https://github.com/jr-chapman/foreign-object-anomaly-detection/blob/main/environment.yml) file. 
 ```
-conda create –-name -f environment.yml
+conda env create -f environment.yml
 conda activate foreign-object-anomaly-detection
 ```
-If you wish to rename the Conda environment, change the name specified in the _environment.yml_ file. 
+If you wish to rename the Conda environment, change the name specified in the [_environment.yml_](https://github.com/jr-chapman/foreign-object-anomaly-detection/blob/main/environment.yml) file. 
 
 ### Step 3: Download the PadChest Dataset 
 The PadChest dataset published by Bustos et al. can be downloaded from this link: [https://bimcv.cipf.es/bimcv-projects/padchest/](https://bimcv.cipf.es/bimcv-projects/padchest/).
@@ -38,19 +38,19 @@ To download the dataset, click the button _Download Complete Dataset_. You will 
 
 - If you wish to verify download was successful, the file _Verify_Zips_ImageCounts.csv.xlsx_ provides an overview of the separate files and number of contained images to check you have the whole dataset.
 
-Finally, download the file _PADCHEST_chest_x_ray_images_labels_160K_01.02.19.csv_ which contains all dataset metadata. This CSV file should be saved to the _dataset_ directory in the cloned repository, so it is accessible during execution.
+Finally, download the file _PADCHEST_chest_x_ray_images_labels_160K_01.02.19.csv_ which contains all dataset metadata. Create a folder _dataset_ in the root directory of this repository and save the CSV file here. 
 
-### Step 4: Download the Pre-Trained MOdel
+### Step 4: Download the Pre-Trained Model
 This implementation is based on the pre-trained MAE anomaly detection model by Lily Georgescu. To download the pre-trained model, navigate to the repository at this link: [https://github.com/lilygeorgescu/MAE-medical-anomaly-detection](https://github.com/lilygeorgescu/MAE-medical-anomaly-detection) and scroll to the section _Results and trained models_. Here, install the pre-trained model for the BraTS2020 dataset over the Google Drive link. A direct link to the Google Drive is provided [here](https://drive.google.com/file/d/1QxFHy8nYeaj5OPQExmcbf9PQNzMOhoCy/view).
 
 Once downloaded, copy and save the _brats\_pretrained.pth_ file to the root directory of the repository. 
 
 ### Step 5: Execute the Model 
 
-The following section provides some example calls for model training, testing and inference. GPU acceleration is recommended for execution. The framework is executed using command line arguments and the minimum arguments required for successful execution are shown here. If you wish to tune other model parameters, please the (args.py)[https://github.com/jr-chapman/foreign-object-anomaly-detection/blob/main/config/args.py] file in the _config_ directory of the repository for all available arguments. 
+The following section provides some example calls for model training, testing and inference. GPU acceleration is recommended for execution. The framework is run using command line arguments and the minimum arguments required for successful execution are shown here. If you wish to tune other model parameters, please see the [_args.py_](https://github.com/jr-chapman/foreign-object-anomaly-detection/blob/main/config/args.py) file in the _config_ directory of the repository for all available arguments. 
 
 #### Model Training 
-To train the model, call the following command from the command line. Replace _<dataset_path>_ with the path to the directory where you saved the PadChest dataset images. As the original images are rather large, please beware that they may need resizing before use depending on your available computational resources. 
+To train the model, run the following command from the command line. Replace _<dataset_path>_ with the path to the directory where the PadChest dataset images are saved. As the original images are rather large, please beware that they may need resizing before use depending on your available computational resources. 
 
 ```
 python main.py --train --data_path=_<dataset_path>_ --lr=0.001 --model_path=./brats_pretrained.pth 
