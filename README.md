@@ -58,6 +58,9 @@ python main.py --train --data_path=<dataset_path> --model_path=./brats_pretraine
 
 #### Model Validation and Testing
 For execution of validation and testing, use the command below. Provide the path to the pre-trained model you wish to use for validation and testing in _<trained_model_checkpoint>_ and the dataset subset in _<validation_subset>_. The dataset subsets are: _validation_negative, testing_negative, validation_positive, testing_positive_
+
+- If you wish to use a model trained on the PadChest dataset you can download a pre-trained checkpoint [here](https://drive.google.com/file/d/1oOyILW_I7nvY5N_tbNBt2Wrqz5HS7Ur2/view?usp=sharing).
+  
 ```
 python main.py --validate --model_path=<trained_model_checkpoint> --data_path=<dataset_path> --validation_set=<validation_subset> --err=ssim,anomaly
 ```
