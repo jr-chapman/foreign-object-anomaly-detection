@@ -13,7 +13,7 @@ This section provides instructions for the installation and setup of the designe
 
 ### Step 1: Clone the GitHub Repository 
 
-First the GitHub repository must be cloned to the local machine. Create a local folder where the implementation should be saved. Open a terminal and navigate to the created directory. Then execute the following command: 
+First the GitHub repository must be cloned to the local machine. Create a local folder to save the implementation to. Open a terminal and navigate to the created directory. Then execute the following command: 
 
 ```
 git clone https://github.com/jr-chapman/foreign_object_anomaly_detection.git
@@ -50,7 +50,7 @@ Once downloaded, copy and save the _brats\_pretrained.pth_ file to the root dire
 The following section provides some example calls for model training, testing and inference. GPU acceleration is recommended for execution. The framework is run using command line arguments and the minimum arguments required for successful execution are shown here. If you wish to tune other model parameters, please see the [_args.py_](https://github.com/jr-chapman/foreign-object-anomaly-detection/blob/main/config/args.py) file in the _config_ directory of the repository for all available arguments. 
 
 #### Model Training 
-To train the model, run the following command from the command line. Replace _<dataset_path>_ with the path to the directory where the PadChest dataset images are saved. As the original images are rather large, please beware that they may need resizing before use depending on your available computational resources. 
+To train the model, run the following command from the command line. Replace _<dataset_path>_ with the path to the PadChest dataset images. As the original images are rather large, please beware that they may need resizing before use depending on your available computational resources. 
 
 ```
 python main.py --train --data_path=<dataset_path> --model_path=./brats_pretrained.pth 
@@ -67,11 +67,11 @@ python main.py --validate --model_path=<trained_model_checkpoint> --data_path=<d
 
 Training and validation or testing can also be called together using the following arguments. In this case, the previously trained model will directly be used for validation. 
 ```
-python main.py --train --data_path=<dataset_path> --lr=0.001 --model_path=./brats_pretrained.pth --validate --validation_set=<validation_subset> --err=ssim,anomaly
+python main.py --train --data_path=<dataset_path> --model_path=./brats_pretrained.pth --validate --validation_set=<validation_subset> --err=ssim,anomaly
 ```
 
 #### Model Inference 
-To run inference, use the arguments below. Running inference means no dataset splits will be performed and the whole dataset will be passed through the pipeline with the provided trained model. Replace _<trained_model_checkpoint>_ with the path to the trained model. 
+To run inference, use the arguments below. Running inference means no dataset splits will be performed and the whole dataset is passed through the pipeline with the provided trained model. Replace _<trained_model_checkpoint>_ with the path to the trained model. 
 
 ```
 python main.py --inference --data_path=<dataset_path> --model_path=<trained_model_checkpoint>  
