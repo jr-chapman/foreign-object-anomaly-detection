@@ -41,7 +41,7 @@ To download the dataset, click the button _Download Complete Dataset_. You will 
 Finally, download the file _PADCHEST_chest_x_ray_images_labels_160K_01.02.19.csv_ which contains all dataset metadata. Create a folder _dataset_ in the root directory of this repository and save the CSV file here. 
 
 ### Step 4: Download the Pre-Trained Model
-This implementation is based on the pre-trained MAE anomaly detection model by Lily Georgescu. To download the pre-trained model, navigate to the repository at this link: [https://github.com/lilygeorgescu/MAE-medical-anomaly-detection](https://github.com/lilygeorgescu/MAE-medical-anomaly-detection) and scroll to the section _Results and trained models_. Here, install the pre-trained model for the BraTS2020 dataset over the Google Drive link. A direct link to the Google Drive is provided [here](https://drive.google.com/file/d/1QxFHy8nYeaj5OPQExmcbf9PQNzMOhoCy/view).
+This implementation is based on the pre-trained MAE anomaly detection model by Lily Georgescu. To download the pre-trained model, navigate to the repository at this link: [https://github.com/lilygeorgescu/MAE-medical-anomaly-detection](https://github.com/lilygeorgescu/MAE-medical-anomaly-detection) and scroll to the section _Results and trained models_. Here, download the pre-trained model for the BraTS2020 dataset over the Google Drive link. A direct link to the Google Drive is provided [here](https://drive.google.com/file/d/1QxFHy8nYeaj5OPQExmcbf9PQNzMOhoCy/view).
 
 Once downloaded, copy and save the _brats\_pretrained.pth_ file to the root directory of the repository. 
 
@@ -62,12 +62,12 @@ For execution of validation and testing, use the command below. Provide the path
 - If you wish to use a model trained on the PadChest dataset you can download a pre-trained checkpoint [here](https://drive.google.com/file/d/1oOyILW_I7nvY5N_tbNBt2Wrqz5HS7Ur2/view?usp=sharing).
   
 ```
-python main.py --validate --model_path=<trained_model_checkpoint> --data_path=<dataset_path> --validation_set=<validation_subset> --err=ssim,anomaly
+python main.py --validate --model_path=<trained_model_checkpoint> --data_path=<dataset_path> --validation_set=<validation_subset>
 ```
 
 Training and validation or testing can also be called together using the following arguments. In this case, the previously trained model will directly be used for validation. 
 ```
-python main.py --train --data_path=<dataset_path> --model_path=./brats_pretrained.pth --validate --validation_set=<validation_subset> --err=ssim,anomaly
+python main.py --train --data_path=<dataset_path> --model_path=./brats_pretrained.pth --validate --validation_set=<validation_subset>
 ```
 
 #### Model Inference 
