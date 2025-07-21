@@ -85,7 +85,7 @@ def main(args):
         save_info("Training argument set - beginning training", logger=logger)
 
         train_dataset = processInput(training_data, images_folder, logger, transform)
-        data_loader_train = torch.utils.data.DataLoader(
+        train_dataloader = torch.utils.data.DataLoader(
             train_dataset, sampler=torch.utils.data.RandomSampler(train_dataset),
             batch_size=args.batch_size,
             num_workers=args.num_workers,
@@ -93,7 +93,7 @@ def main(args):
             drop_last=True
         )
 
-        model = train(args=args, device=device, trainDataLoader=data_loader_train, logger=logger)
+        model = train(args=args, device=device, trainDataLoader=train_dataloader, logger=logger)
 
         save_info("Training complete, validating for threshold calculation", logger=logger)
         val_dataset = processInput(testing_negative, images_folder, logger, transform)

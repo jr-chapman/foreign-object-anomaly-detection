@@ -78,7 +78,7 @@ class MAEPostProcessor:
                 anomaly_score_normal.append(np.mean(difference))
         return anomaly_score_normal, anomaly_score_abnormal 
 
-    def get_difference(self, model, images, filenames, ground_truth_labels, mode="complete", img_folder=None, mask_folder=None, use_validation=True):
+    def get_masks(self, model, images, filenames, ground_truth_labels, mode="complete", img_folder=None, mask_folder=None, use_validation=True):
         ground_truth_labels = ground_truth_labels.numpy()
         imgs_ = [torch.einsum('chw->hwc', img).numpy() for img in images]
         imgs_ = np.array(imgs_, np.float32)
@@ -137,7 +137,7 @@ class MAEPostProcessor:
   
         return results
 
-    def postprocessing_dataloader(self, model, dataloader, img_folder, mask_folder): 
+    def get_mask_metrics(self, model, dataloader, img_folder, mask_folder): 
         result_keys = ["anomaly_score_normal", "anomaly_score_abnormal", 
                        "mask_score_normal", "mask_score_abnormal", 
                        "ssim_score_normal", "ssim_score_abnormal", 
@@ -146,7 +146,7 @@ class MAEPostProcessor:
         metrics['labels'] = []
         for data_iter_step, (samples, labels, filenames) in enumerate(dataloader): 
             print(f"Validating batch {data_iter_step} with {len(samples)} images")
-            batch_results = self.get_difference(model, samples, filenames, labels, img_folder=img_folder, mask_folder=mask_folder)
+            batch_results = self.get_masks(model, samples, filenames, labels, img_folder=img_folder, mask_folder=mask_folder)
             for key in result_keys: 
                 if key in batch_results: 
                     metrics[key].extend(batch_results[key])
@@ -163,7 +163,7 @@ class MAEPostProcessor:
         if isinstance(model, str): 
             model = prepare_model(model)
 
-        results = self.postprocessing_dataloader(model, dataloader=dataloader, img_folder=img_folder, mask_folder=mask_folder)
+        results = self.get_mask_metrics(model, dataloader=dataloader, img_folder=img_folder, mask_folder=mask_folder)
         THRESHOLD = get_threshold()
         predictions = results['mask_score_total']
         label_predictions = (np.array(predictions) > THRESHOLD).astype(np.uint8)
@@ -178,6 +178,6 @@ class MAEPostProcessor:
         mask_scores = []
         for data_iter_step, (samples, labels, filenames) in enumerate(dataloader): 
             print(f"Generating masks for threshold calculation. Batch {data_iter_step}")
-            batch_mask_scores = self.get_difference(model, images=samples, filenames=filenames, ground_truth_labels=labels, mode="threshold")
+            batch_mask_scores = self.get_masks(model, images=samples, filenames=filenames, ground_truth_labels=labels, mode="threshold")
             mask_scores.extend(batch_mask_scores)
         calculate_threshold.calculate_threshold(self.logger, mask_scores)
